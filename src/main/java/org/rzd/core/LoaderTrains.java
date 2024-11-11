@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component("TicketLoader")
+@Component("LoaderTrains")
 //  Loader загружает список поездов на нужную дату
 public class LoaderTrains {
 
@@ -33,6 +34,7 @@ public class LoaderTrains {
 
     }
 
+    @Autowired
     public LoaderTrains(ApplicationContext applicationContext) {
         httpclient = HttpClients.createDefault();
         context = applicationContext;

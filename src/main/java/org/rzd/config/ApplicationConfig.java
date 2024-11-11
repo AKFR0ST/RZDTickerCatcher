@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @ComponentScan("org.rzd")
-@PropertySource("classpath:app.properties")
+@PropertySource(value = "classpath:app.properties", encoding = "UTF-8")
 
 public class ApplicationConfig {
     @Value("${app.urlApi}")
@@ -24,12 +24,18 @@ public class ApplicationConfig {
     public String code1;
     @Value("${app.dt0}")
     public String dt0;
+    @Value("${app.number}")
+    public String number;
+    @Value("${app.type}")
+    public String type;
+    @Value("${app.maxprice}")
+    public Long maxprice;
 
 
     //  Загрузить из конфига параметры поиска
     @Bean
     public TicketOptions getTicketOptions(){
-        return new TicketOptions(urlApi, layer_id, code0, code1, dt0);
+        return new TicketOptions(urlApi, layer_id, code0, code1, dt0, number, type, maxprice);
     }
 
     @Bean

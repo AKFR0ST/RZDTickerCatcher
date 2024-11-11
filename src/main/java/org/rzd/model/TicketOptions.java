@@ -8,17 +8,23 @@ public class TicketOptions {
     private String code0;
     private String code1;
     private String dt0;
+    private String number;
+    private String type;
+    private Long maxprice;
 
     public TicketOptions() {
 
     }
 
-    public TicketOptions(String urlApi, String layer_id, String code0, String code1, String dt0) {
+    public TicketOptions(String urlApi, String layer_id, String code0, String code1, String dt0, String number, String type, Long maxprice) {
         this.urlApi = urlApi;
         this.layer_id = layer_id;
         this.code0 = code0;
         this.code1 = code1;
         this.dt0 = dt0;
+        this.number = number;
+        this.type = type;
+        this.maxprice = maxprice;
     }
 
     public String getUrlApi() {
@@ -59,6 +65,30 @@ public class TicketOptions {
 
     public void setDt0(String dt0) {
         this.dt0 = dt0;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getMaxprice() {
+        return maxprice;
+    }
+
+    public void setMaxprice(Long maxprice) {
+        this.maxprice = maxprice;
     }
 
 
