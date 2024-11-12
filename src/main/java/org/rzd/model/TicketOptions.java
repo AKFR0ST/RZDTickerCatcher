@@ -1,7 +1,5 @@
 package org.rzd.model;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public class TicketOptions {
     private String urlApi;
     private String layer_id;

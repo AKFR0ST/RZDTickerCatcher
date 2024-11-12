@@ -1,4 +1,4 @@
-package org.rzd.core;
+package org.rzd.services;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
@@ -93,7 +93,7 @@ public class LoaderTrains {
     }
 
     public Long getRid() {
-        long rid = 0L;
+        long rid;
 
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
         HttpGet httpGet = getHttpGet(0L);
@@ -128,7 +128,7 @@ public class LoaderTrains {
                 + "&dt0=" + ticketOptions.getDt0()
                 + "&code1=" + ticketOptions.getCode1();
         if (rid != 0L) {
-            getUrl += "&rid=" + rid.toString();
+            getUrl += "&rid=" + rid;
         }
         HttpGet httpGet = new HttpGet(getUrl);
         httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");

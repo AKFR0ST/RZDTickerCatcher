@@ -1,7 +1,5 @@
 package org.rzd.config;
 
-
-import org.rzd.core.LoaderTrains;
 import org.rzd.model.TicketOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,12 +36,4 @@ public class ApplicationConfig {
         return new TicketOptions(urlApi, layer_id, code0, code1, dt0, number, type, maxprice);
     }
 
-    @Bean
-    public LoaderTrains loadLib() {
-        return new LoaderTrains();
-    }
-
-    public void setOptions() {
-
-    }
 }

@@ -1,4 +1,4 @@
-package org.rzd.core;
+package org.rzd.services;
 
 import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
@@ -53,7 +53,7 @@ public class TicketCatcher {
     }
 
     public void sendMessage(String message) {
-//
+
         String SendMessageCommand = "curl -s -d \"chat_id=519674552&disable_web_page_preview=1&text="+message+"\" https://api.telegram.org/bot6820154944:AAFxfz8Wb3QOnYNCCqV7jpo0pkoeG0--3uE/sendMessage";
         try {
             Runtime.getRuntime().exec(SendMessageCommand);
