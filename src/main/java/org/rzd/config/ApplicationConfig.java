@@ -1,5 +1,6 @@
 package org.rzd.config;
 
+import org.rzd.model.ApplicationOptions;
 import org.rzd.model.TicketOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,24 +17,34 @@ public class ApplicationConfig {
     private String urlApi;
     @Value("${app.layer_id}")
     private String layer_id;
-    @Value("${app.code0}")
-    private String code0;
-    @Value("${app.code1}")
-    public String code1;
-    @Value("${app.dt0}")
-    public String dt0;
-    @Value("${app.number}")
-    public String number;
-    @Value("${app.type}")
-    public String type;
-    @Value("${app.maxprice}")
-    public Long maxprice;
+    @Value("${app.timeout}")
+    private Long timeout;
+//    @Value("${app.code0}")
+//    private String code0;
+//    @Value("${app.code1}")
+//    public String code1;
+//    @Value("${app.dt0}")
+//    public String dt0;
+//    @Value("${app.number}")
+//    public String number;
+//    @Value("${app.type}")
+//    public String type;
+//    @Value("${app.maxprice}")
+//    public Long maxprice;
+//    @Value("${app.timeout}")
+//    public Long timeout;
 
 
     //  Загрузить из конфига параметры поиска
     @Bean
-    public TicketOptions getTicketOptions(){
-        return new TicketOptions(urlApi, layer_id, code0, code1, dt0, number, type, maxprice);
+    public ApplicationOptions getApplicationOptions(){
+        return new ApplicationOptions(urlApi, layer_id, timeout);
+//        return new TicketOptions(urlApi, layer_id, code0, code1, dt0, number, type, maxprice);
     }
+
+//    @Bean
+//    public TicketOptions getTicketOptions(){
+//        return new TicketOptions()
+//    }
 
 }

@@ -1,5 +1,7 @@
 package org.rzd.services;
 
+import org.rzd.config.ApplicationConfig;
+import org.rzd.model.ApplicationOptions;
 import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
@@ -10,17 +12,24 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 
-@Component("TicketCatcher")
+//@Component("TicketCatcher")
 public class TicketCatcher {
-    ApplicationContext context;
+//    private final ApplicationConfig applicationConfig;
+    ApplicationContext context; //  Настройки не из контекста, а при создании объекта
     LoaderTrains loaderTrains;
+    ApplicationOptions applicationOptions;
     TicketOptions ticketOptions;
 
 
-    public TicketCatcher(@Qualifier("LoaderTrains") LoaderTrains loaderTrains) {
-        this.loaderTrains = loaderTrains;
-        context = loaderTrains.context;
-        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
+    public TicketCatcher(ApplicationContext applicationContext, TicketOptions ticketOptions) {
+        context = applicationContext;
+        applicationOptions = context.getBean("getApplicationOptions", ApplicationOptions.class);
+        this.ticketOptions = ticketOptions;
+        loaderTrains = new LoaderTrains(context, ticketOptions);
+
+
+//        context = loaderTrains.context;
+//        this.applicationConfig = applicationConfig;
     }
 
     public void catchTicket() {
@@ -43,7 +52,7 @@ public class TicketCatcher {
                 if(!gotcha)
                 {
                     System.out.println("Ticket not found");
-                    Thread.sleep(120000);
+                    Thread.sleep(applicationOptions.getTimeout());
                 }
             }
             catch (InterruptedException e) {

@@ -9,6 +9,7 @@ import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.rzd.model.ApplicationOptions;
 import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
@@ -20,10 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component("LoaderTrains")
+//@Component("LoaderTrains")
 //  Loader загружает список поездов на нужную дату
 public class LoaderTrains {
 
+    ApplicationOptions applicationOptions;
     ApplicationContext context;
     CloseableHttpClient httpclient;
     BasicCookieStore cookieStore;
@@ -34,21 +36,23 @@ public class LoaderTrains {
 
     }
 
-    @Autowired
-    public LoaderTrains(ApplicationContext applicationContext) {
+//    @Autowired
+    public LoaderTrains(ApplicationContext applicationContext, TicketOptions ticketOptions) {
         httpclient = HttpClients.createDefault();
         context = applicationContext;
-        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
+        applicationOptions = context.getBean("getApplicationOptions", ApplicationOptions.class);
+        this.ticketOptions = ticketOptions;
         cookieStore = new BasicCookieStore();
         responseHandler = addResponseHandler();
+//        this.applicationOptions = applicationOptions;
     }
 
-    public void LoadContext(ApplicationContext applicationContext) {
-        httpclient = HttpClients.createDefault();
-        context = applicationContext;
-        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
-        cookieStore = new BasicCookieStore();
-    }
+//    public void LoadContext(ApplicationContext applicationContext) {
+//        httpclient = HttpClients.createDefault();
+//        context = applicationContext;
+//        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
+//        cookieStore = new BasicCookieStore();
+//    }
 
 
     public List<Train> getTrainList()  {
@@ -119,8 +123,8 @@ public class LoaderTrains {
     }
 
     private HttpGet getHttpGet(Long rid) {
-        String getUrl = ticketOptions.getUrlApi()
-                + "?layer_id=" + ticketOptions.getLayer_id()
+        String getUrl = applicationOptions.getUrlApi()
+                + "?layer_id=" + applicationOptions.getLayer_id()
                 + "&dir=0"
                 + "&tfl=3"
                 + "&checkSeats=0"

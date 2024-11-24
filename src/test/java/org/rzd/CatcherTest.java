@@ -26,8 +26,15 @@ public class CatcherTest {
     @BeforeEach
     void init() {
         context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
-        loaderTrains = new LoaderTrains(context);
-        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
+//        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
+        ticketOptions = new TicketOptions(
+                "2000000",
+                "2010001",
+                "25.11.2024",
+                "106Я",
+                "Сид",
+                2000L);
+        loaderTrains = new LoaderTrains(context, ticketOptions);
     }
 
     @Test
