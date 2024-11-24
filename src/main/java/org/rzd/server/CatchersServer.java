@@ -9,4 +9,5 @@ public interface CatchersServer {
     public void activeCatchers();
     public void allCatchers();
     public void killCatcherById(Long id);
+    public void killAllCatchers();
 }

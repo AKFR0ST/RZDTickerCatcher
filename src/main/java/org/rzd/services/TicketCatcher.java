@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 //@Component("TicketCatcher")
-public class TicketCatcher {
+public class TicketCatcher extends Thread {
 //    private final ApplicationConfig applicationConfig;
     ApplicationContext context; //  Настройки не из контекста, а при создании объекта
     LoaderTrains loaderTrains;
@@ -32,6 +32,10 @@ public class TicketCatcher {
 //        this.applicationConfig = applicationConfig;
     }
 
+    public void run() {
+        catchTicket();
+    }
+
     public void catchTicket() {
         boolean gotcha = false;
 
@@ -42,6 +46,7 @@ public class TicketCatcher {
                     for (Car car : train.getCarList()) {
                         if(car.getType().equals(ticketOptions.getType())&&((car.getFreeSeats()>0)&&(car.getTariff()< ticketOptions.getMaxprice()))){
                             gotcha = true;
+
                             System.out.println("GOTCHA!!!");
                             sendMessage("GOTCHA!!!\n" + "Train: " + train.getNumber() +"\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
                         }
