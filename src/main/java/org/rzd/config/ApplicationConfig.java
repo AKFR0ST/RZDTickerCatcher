@@ -19,6 +19,11 @@ public class ApplicationConfig {
     private String layer_id;
     @Value("${app.timeout}")
     private Long timeout;
+    @Value("${app.botId}")
+    private String botId;
+    @Value("${app.apiKey}")
+    private String apiKey;
+
 //    @Value("${app.code0}")
 //    private String code0;
 //    @Value("${app.code1}")
@@ -38,7 +43,7 @@ public class ApplicationConfig {
     //  Загрузить из конфига параметры поиска
     @Bean
     public ApplicationOptions getApplicationOptions(){
-        return new ApplicationOptions(urlApi, layer_id, timeout);
+        return new ApplicationOptions(urlApi, layer_id, timeout, botId, apiKey);
 //        return new TicketOptions(urlApi, layer_id, code0, code1, dt0, number, type, maxprice);
     }
 

@@ -13,8 +13,8 @@ public class Main {
         TicketOptions ticket1 = new TicketOptions(
                 "2000000",
                 "2010001",
-                "25.11.2024",
-                "106Я",
+                "6.12.2024",
+                "104Я",
                 "Сид",
                 2000L);
 
@@ -29,14 +29,15 @@ public class Main {
         CatchersServerImpl server = context.getBean(CatchersServerImpl.class);
         server.start();
         server.newCatcher(ticket1);
-        server.newCatcher(ticket2);
-        server.newCatcher(ticket1);
-        server.activeCatchers();
-        server.allCatchers();
-        Thread.sleep(10000L);
-        System.out.println("Catcher stopped in 10s");
-        server.activeCatchers();
-        server.allCatchers();
+        server.botApi.allCatchers(519674552L);
+//        server.newCatcher(ticket2);
+//        server.newCatcher(ticket1);
+//        server.activeCatchers();
+//        server.allCatchers();
+//        Thread.sleep(10000L);
+//        System.out.println("Catcher stopped in 10s");
+//        server.activeCatchers();
+//        server.allCatchers();
 //        Thread t1 = new TicketCatcher(context, ticket1);
 //        Thread t2 = new TicketCatcher(context, ticket2);
 //        t1.start();

@@ -7,7 +7,7 @@ public interface CatchersServer {
     public void stop();
     public void newCatcher(TicketOptions ticketOptions);
     public void activeCatchers();
-    public void allCatchers();
+    public String allCatchers();
     public void killCatcherById(Long id);
     public void killAllCatchers();
 }

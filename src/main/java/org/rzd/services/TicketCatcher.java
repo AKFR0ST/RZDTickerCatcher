@@ -48,7 +48,7 @@ public class TicketCatcher extends Thread {
                             gotcha = true;
 
                             System.out.println("GOTCHA!!!");
-                            sendMessage("GOTCHA!!!\n" + "Train: " + train.getNumber() +"\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
+//                            sendMessage("GOTCHA!!!\n" + "Train: " + train.getNumber() +"\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
                         }
                     }
                 }
