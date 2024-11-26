@@ -5,15 +5,15 @@ import org.springframework.context.ApplicationContext;
 
 public class Catcher {
     private Long id;
-    private String user;
-    private boolean finished;
+    private Long chatId;
     private TicketOptions ticketOptions;
     private TicketCatcher ticketCatcher;
 
-    public Catcher(Long id, TicketOptions ticketOptions, ApplicationContext context) {
+    public Catcher(Long id, Long chatId, TicketOptions ticketOptions, ApplicationContext context) {
         this.id = id;
+        this.chatId = chatId;
         this.ticketOptions = ticketOptions;
-        ticketCatcher = new TicketCatcher(context, ticketOptions);
+        ticketCatcher = new TicketCatcher(context, ticketOptions, chatId);
         ticketCatcher.start();
     }
 
@@ -25,12 +25,12 @@ public class Catcher {
         this.id = id;
     }
 
-    public String getUser() {
-        return user;
+    public Long getChatId() {
+        return chatId;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setChatId(Long chatId) {
+        this.chatId = chatId;
     }
 
     public TicketOptions getTicketOptions() {

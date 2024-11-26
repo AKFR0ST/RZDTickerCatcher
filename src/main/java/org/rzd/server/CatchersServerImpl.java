@@ -1,6 +1,5 @@
 package org.rzd.server;
 
-import org.rzd.bot.BotInterface;
 import org.rzd.bot.BotInterfaceImpl;
 import org.rzd.model.Catcher;
 import org.rzd.model.TicketOptions;
@@ -33,14 +32,14 @@ public class CatchersServerImpl implements CatchersServer {
         catchers = new ArrayList<>();
         lastId = 0L;
         botInterfaceImpl = context.getBean(BotInterfaceImpl.class);
-        TicketOptions ticket2 = new TicketOptions(
-                "2000000",
-                "2010001",
-                "29.11.2024",
-                "106Я",
-                "Сид",
-                2000L);
-        newCatcher(ticket2);
+//        TicketOptions ticket2 = new TicketOptions(
+//                "2000000",
+//                "2010001",
+//                "29.11.2024",
+//                "106Я",
+//                "Сид",
+//                2000L);
+//        newCatcher(ticket2, 519674552L);
         botInterfaceImpl.start();
 
     }
@@ -53,18 +52,22 @@ public class CatchersServerImpl implements CatchersServer {
     }
 
     @Override
-    public void newCatcher(TicketOptions ticketOptions) {
-        Catcher catcher = new Catcher(++lastId, ticketOptions, context);
+    public void newCatcher(TicketOptions ticketOptions, Long chatId) {
+        Catcher catcher = new Catcher(++lastId, chatId, ticketOptions, context);
         catchers.add(catcher);
     }
 
     @Override
-    public void activeCatchers() {
+    public String activeCatchers() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Active catchers:\n");
         for (Catcher catcher : catchers) {
-            if(catcher.getTicketCatcher().getState()!= Thread.State.TERMINATED) {
-                System.out.println("Catcher " + catcher.getId() + " is already running");
+            if(catcher.getTicketCatcher().getState()!= Thread.State.TERMINATED){
+                sb.append("Catcher id :").append(catcher.getId()).append(" State: active ").
+                        append(catcher.getTicketCatcher().getTicketOptions().toString());
             }
         }
+        return sb.toString();
     }
 
     @Override
@@ -72,24 +75,54 @@ public class CatchersServerImpl implements CatchersServer {
         StringBuilder sb = new StringBuilder();
         sb.append("Catchers:\n");
         for (Catcher catcher : catchers) {
-            sb.append("Catcher ").append(catcher.getId()).append("\n");
+            sb.append("Catcher id:").append(catcher.getId()).append(" State: ");
+            if(catcher.getTicketCatcher().getState()== Thread.State.TERMINATED){
+                sb.append("finished ");
+            }
+            else {
+                sb.append("active ");
+            }
+            sb.append(catcher.getTicketCatcher().getTicketOptions().toString());
         }
         return sb.toString();
     }
 
     @Override
-    public void killCatcherById(Long id) {
+    public int killCatcherById(Long id){
         for (Catcher catcher : catchers) {
-            if(catcher.getId().equals(id)) {
+            if(catcher.getId().equals(id)){
                 catcher.getTicketCatcher().interrupt();
+                catcher.getTicketCatcher().sendStopCommand();
             }
         }
+        int result = 1;
+        for (Catcher catcher : catchers) {
+            if(catcher.getId().equals(id)){
+                if(catcher.getTicketCatcher().getState()== Thread.State.TERMINATED){
+                    result = 0;
+                }
+                else{
+                    result = 2;
+                }
+            }
+        }
+        return result;
     }
 
     @Override
     public void killAllCatchers() {
         for (Catcher catcher : catchers) {
                 catcher.getTicketCatcher().interrupt();
+                catcher.getTicketCatcher().sendStopCommand();
         }
+    }
+
+    public Thread.State checkCatcherStatus(Long id){
+        for (Catcher catcher : catchers) {
+            if(catcher.getId().equals(id)){
+                return catcher.getTicketCatcher().getState();
+            }
+        }
+        return null;
     }
 }

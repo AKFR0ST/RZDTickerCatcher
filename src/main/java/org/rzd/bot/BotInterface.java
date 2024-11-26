@@ -2,6 +2,7 @@ package org.rzd.bot;
 
 public interface BotInterface {
     void allCatchers(Long chatId);
-    void killCatcher();
-    void newCatcher();
+    void activeCatchers(Long chatId);
+    void killCatcher(Long chatId);
+    void newCatcher(Long chatId);
 }

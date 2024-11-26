@@ -4,46 +4,26 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TicketOptions {
-//    private String urlApi;
-//    private String layer_id;
     private String code0;
     private String code1;
     private String dt0;
     private String number;
     private String type;
-    private Long maxprice;
+    private Long maxPrice;
 
     public TicketOptions() {
 
     }
 
 
-    public TicketOptions(String code0, String code1, String dt0, String number, String type, Long maxprice) {
-//        this.urlApi = urlApi;
-//        this.layer_id = layer_id;
+    public TicketOptions(String code0, String code1, String dt0, String number, String type, Long maxPrice) {
         this.code0 = code0;
         this.code1 = code1;
         this.dt0 = dt0;
         this.number = number;
         this.type = type;
-        this.maxprice = maxprice;
+        this.maxPrice = maxPrice;
     }
-
-//    public String getUrlApi() {
-//        return urlApi;
-//    }
-//
-//    public void setUrlApi(String urlApi) {
-//        this.urlApi = urlApi;
-//    }
-
-//    public String getLayer_id() {
-//        return layer_id;
-//    }
-//
-//    public void setLayer_id(String layer_id) {
-//        this.layer_id = layer_id;
-//    }
 
     public String getCode0() {
         return code0;
@@ -85,12 +65,26 @@ public class TicketOptions {
         this.type = type;
     }
 
-    public Long getMaxprice() {
-        return maxprice;
+    public Long getMaxPrice() {
+        return maxPrice;
     }
 
-    public void setMaxprice(Long maxprice) {
-        this.maxprice = maxprice;
+    public void setMaxPrice(Long maxPrice) {
+        this.maxPrice = maxPrice;
+    }
+
+    @Override
+    public String toString() {
+        return dt0 +
+                "\t" +
+                number +
+                "\t" +
+                code0 +
+                "\t->\t" +
+                code1 +
+                "\t" +
+                type +
+                "\n";
     }
 
 

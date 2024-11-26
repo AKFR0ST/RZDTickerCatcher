@@ -13,18 +13,13 @@ import org.rzd.model.ApplicationOptions;
 import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Component("LoaderTrains")
-//  Loader загружает список поездов на нужную дату
 public class LoaderTrains {
-
     ApplicationOptions applicationOptions;
     ApplicationContext context;
     CloseableHttpClient httpclient;
@@ -36,7 +31,6 @@ public class LoaderTrains {
 
     }
 
-//    @Autowired
     public LoaderTrains(ApplicationContext applicationContext, TicketOptions ticketOptions) {
         httpclient = HttpClients.createDefault();
         context = applicationContext;
@@ -44,16 +38,7 @@ public class LoaderTrains {
         this.ticketOptions = ticketOptions;
         cookieStore = new BasicCookieStore();
         responseHandler = addResponseHandler();
-//        this.applicationOptions = applicationOptions;
     }
-
-//    public void LoadContext(ApplicationContext applicationContext) {
-//        httpclient = HttpClients.createDefault();
-//        context = applicationContext;
-//        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
-//        cookieStore = new BasicCookieStore();
-//    }
-
 
     public List<Train> getTrainList()  {
         Long rid = getRid();
