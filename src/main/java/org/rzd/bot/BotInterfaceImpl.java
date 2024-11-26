@@ -17,7 +17,7 @@ public class BotInterfaceImpl implements BotInterface {
     ApplicationContext applicationContext;
     CatchersServerImpl server;
     ApplicationOptions options;
-    public Long lastUpdateId;
+    public Long offset;
 
     public BotInterfaceImpl() {
 //        server =
@@ -31,14 +31,38 @@ public class BotInterfaceImpl implements BotInterface {
         this.applicationContext = applicationContext;
         server = applicationContext.getBean(CatchersServerImpl.class);
         options = applicationContext.getBean(ApplicationOptions.class);
-        lastUpdateId = getLastUpdateIdFromBot();
-        System.out.println("lastUpdateId: " + lastUpdateId);
+        offset = 0L;
+//        lastUpdateId = getLastUpdateIdFromBot();
+//        System.out.println("lastUpdateId: " + lastUpdateId);
+
+    }
+
+    public void start(){
         while (true){
             RestTemplate restTemplate = new RestTemplate();
-            String url = "https://api.telegram.org/bot6820154944:AAFxfz8Wb3QOnYNCCqV7jpo0pkoeG0--3uE/getUpdates";
-            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            String url = "https://api.telegram.org/bot6820154944:AAFxfz8Wb3QOnYNCCqV7jpo0pkoeG0--3uE/getUpdates?limit=1&offset=" + offset;
+            String response = restTemplate.getForEntity(url, String.class).getBody();
+            assert response != null;
             JSONObject jsonObject = new JSONObject(response);
+            if(jsonObject.getBoolean("ok")&&!jsonObject.getJSONArray("result").isEmpty()){
+                offset = jsonObject.getJSONArray("result").getJSONObject(0).getLong("update_id")+1;
+                Long chatId = jsonObject.
+                        getJSONArray("result").
+                        getJSONObject(0).
+                        getJSONObject("message").
+                        getJSONObject("chat").
+                        getLong("id");
 
+                String  message = jsonObject.
+                        getJSONArray("result").
+                        getJSONObject(0).
+                        getJSONObject("message").
+                        getString("text");
+
+                switch (message) {
+                    case ("/all"): allCatchers(chatId); break;
+                }
+            }
 
 //            https://api.telegram.org/bot6820154944:AAFxfz8Wb3QOnYNCCqV7jpo0pkoeG0--3uE/getUpdates?offset=75
             //  В цикле запрашиваем сообщеньки
@@ -61,6 +85,8 @@ public class BotInterfaceImpl implements BotInterface {
 //        int len = jsonObject.getJSONArray("result").length();
 //        return jsonObject.getJSONArray("result").getJSONObject(len-1).getJSONObject("message").getLong("message_id");
     }
+
+
 
     @Override
     public void allCatchers(Long chatId) {

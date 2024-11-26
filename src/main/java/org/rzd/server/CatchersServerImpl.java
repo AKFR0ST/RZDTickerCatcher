@@ -1,6 +1,7 @@
 package org.rzd.server;
 
 import org.rzd.bot.BotInterface;
+import org.rzd.bot.BotInterfaceImpl;
 import org.rzd.model.Catcher;
 import org.rzd.model.TicketOptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class CatchersServerImpl implements CatchersServer {
     private ArrayList<Catcher> catchers;
     private Long lastId;
     ApplicationContext context;
-    public BotInterface botApi;
+    public BotInterfaceImpl botInterfaceImpl;
 
     public CatchersServerImpl() {
 
@@ -31,7 +32,16 @@ public class CatchersServerImpl implements CatchersServer {
         System.out.println("Starting server...");
         catchers = new ArrayList<>();
         lastId = 0L;
-        botApi = context.getBean(BotInterface.class);
+        botInterfaceImpl = context.getBean(BotInterfaceImpl.class);
+        TicketOptions ticket2 = new TicketOptions(
+                "2000000",
+                "2010001",
+                "29.11.2024",
+                "106Я",
+                "Сид",
+                2000L);
+        newCatcher(ticket2);
+        botInterfaceImpl.start();
 
     }
 
@@ -60,6 +70,7 @@ public class CatchersServerImpl implements CatchersServer {
     @Override
     public String allCatchers() {
         StringBuilder sb = new StringBuilder();
+        sb.append("Catchers:\n");
         for (Catcher catcher : catchers) {
             sb.append("Catcher ").append(catcher.getId()).append("\n");
         }

@@ -28,8 +28,8 @@ public class Main {
 
         CatchersServerImpl server = context.getBean(CatchersServerImpl.class);
         server.start();
-        server.newCatcher(ticket1);
-        server.botApi.allCatchers(519674552L);
+//        server.newCatcher(ticket1);
+//        server.botApi.allCatchers(519674552L);
 //        server.newCatcher(ticket2);
 //        server.newCatcher(ticket1);
 //        server.activeCatchers();
