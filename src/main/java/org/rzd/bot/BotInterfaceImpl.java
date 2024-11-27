@@ -16,6 +16,7 @@ public class BotInterfaceImpl implements BotInterface {
     CatchersServerImpl server;
     ApplicationOptions options;
     public Long offset;
+    MessageSender messageSender;
 
     public BotInterfaceImpl() {
 
@@ -27,7 +28,28 @@ public class BotInterfaceImpl implements BotInterface {
         server = applicationContext.getBean(CatchersServerImpl.class);
         options = applicationContext.getBean(ApplicationOptions.class);
         offset = 0L;
+        messageSender = applicationContext.getBean(MessageSender.class);
     }
+
+//    public static class MessageSender {
+//        ApplicationOptions options;
+//        public MessageSender(ApplicationOptions options) {
+//            this.options = options;
+//        }
+//
+//        public void sendMessage(Long chatId, String message) {
+//            RestTemplate restTemplate = new RestTemplate();
+//            String url = "https://api.telegram.org/bot"+
+//                    options.getBotId()+
+//                    ":"+
+//                    options.getApiKey()+
+//                    "/sendMessage?chat_id="+
+//                    chatId+
+//                    "&text="+
+//                    message;
+//            restTemplate.getForEntity(url, String.class);
+//        }
+//    }
 
     private String readOneMessage() {
         RestTemplate restTemplate = new RestTemplate();
@@ -91,17 +113,17 @@ public class BotInterfaceImpl implements BotInterface {
 
     @Override
     public void allCatchers(Long chatId) {
-        sendMessage(chatId, server.allCatchers());
+        messageSender.sendMessage(chatId, server.allCatchers());
     }
 
     @Override
     public void activeCatchers(Long chatId) {
-        sendMessage(chatId, server.activeCatchers());
+        messageSender.sendMessage(chatId, server.activeCatchers());
     }
 
     @Override
     public void killCatcher(Long chatId) {
-        sendMessage(chatId, "Выберете кэтчер для остановки:\n"+server.activeCatchers());
+        messageSender.sendMessage(chatId, "Выберете кэтчер для остановки:\n"+server.activeCatchers());
         String response = readOneMessage();
         JSONObject jsonObject = new JSONObject(response);
         String idCatcherToKill = jsonObject.getJSONArray("result").getJSONObject(0).getJSONObject("message").getString("text");
@@ -116,26 +138,25 @@ public class BotInterfaceImpl implements BotInterface {
         if(result==2){
             resultMessage = "Catcher with id " + idCatcherToKill + "not found";
         }
-        sendMessage(chatId, resultMessage);
+        messageSender.sendMessage(chatId, resultMessage);
     }
 
     @Override
     public void newCatcher(Long chatId) {
         TicketOptions ticketOptions = new TicketOptions();
-        sendMessage(chatId, "Введите код станции отправления");
+        messageSender.sendMessage(chatId, "Введите код станции отправления");
         ticketOptions.setCode0(getTextMessage(readOneMessage()));
-        sendMessage(chatId, "Введите код станции назначения");
+        messageSender.sendMessage(chatId, "Введите код станции назначения");
         ticketOptions.setCode1(getTextMessage(readOneMessage()));
-        sendMessage(chatId, "Введите дату отправления");
+        messageSender.sendMessage(chatId, "Введите дату отправления");
         ticketOptions.setDt0(getTextMessage(readOneMessage()));
-        sendMessage(chatId, "Введите номер поезда");
+        messageSender.sendMessage(chatId, "Введите номер поезда");
         ticketOptions.setNumber(getTextMessage(readOneMessage()));
-        sendMessage(chatId, "Введите тип вагона");
+        messageSender.sendMessage(chatId, "Введите тип вагона");
         ticketOptions.setType(getTextMessage(readOneMessage()));
-        sendMessage(chatId, "Введите максимальную цену билета");
+        messageSender.sendMessage(chatId, "Введите максимальную цену билета");
         ticketOptions.setMaxPrice(Long.parseLong(getTextMessage(readOneMessage())));
         server.newCatcher(ticketOptions, chatId);
-
     }
 
     private void stopServer(){
@@ -147,16 +168,4 @@ public class BotInterfaceImpl implements BotInterface {
         return jsonObject.getJSONArray("result").getJSONObject(0).getJSONObject("message").getString("text");
     }
 
-    public void sendMessage(Long chatId, String message) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://api.telegram.org/bot"+
-                options.getBotId()+
-                ":"+
-                options.getApiKey()+
-                "/sendMessage?chat_id="+
-                chatId+
-                "&text="+
-                message;
-        restTemplate.getForEntity(url, String.class);
-    }
 }

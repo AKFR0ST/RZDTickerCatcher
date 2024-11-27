@@ -1,6 +1,6 @@
 package org.rzd.services;
 
-import org.rzd.bot.BotInterfaceImpl;
+import org.rzd.bot.MessageSender;
 import org.rzd.model.ApplicationOptions;
 import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
@@ -14,15 +14,15 @@ public class TicketCatcher extends Thread {
     ApplicationOptions applicationOptions;
     TicketOptions ticketOptions;
     boolean receiveStopCommand;
-    BotInterfaceImpl bot;
     Long chatId;
+    MessageSender messageSender;
 
     public TicketCatcher(ApplicationContext applicationContext, TicketOptions ticketOptions, Long chatId) {
         context = applicationContext;
         applicationOptions = context.getBean("getApplicationOptions", ApplicationOptions.class);
         this.ticketOptions = ticketOptions;
         loaderTrains = new LoaderTrains(context, ticketOptions);
-        bot = context.getBean("BotApiImpl", BotInterfaceImpl.class);
+        messageSender = context.getBean("MessageSenderImpl", MessageSender.class);
         this.chatId = chatId;
     }
 
@@ -50,7 +50,7 @@ public class TicketCatcher extends Thread {
                         if(car.getType().equals(ticketOptions.getType())&&((car.getFreeSeats()>0)&&(car.getTariff()< ticketOptions.getMaxPrice()))){
                             gotcha = true;
                             System.out.println("GOTCHA!!!");
-                            bot.sendMessage(chatId, "The ticket is caught! \n Train: " + train.getNumber() +"\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
+                            messageSender.sendMessage(chatId, "The ticket is caught! \n Train: " + train.getNumber() +"\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
                         }
                     }
                 }
