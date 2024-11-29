@@ -3,17 +3,20 @@ package org.rzd.bot;
 import org.json.JSONObject;
 import org.rzd.model.ApplicationOptions;
 import org.rzd.model.TicketOptions;
+import org.rzd.server.CatchersServer;
 import org.rzd.server.CatchersServerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Component ("BotApiImpl")
+//@Component ("BotInterfaceImpl")
 public class BotInterfaceImpl implements BotInterface {
 
     ApplicationContext applicationContext;
-    CatchersServerImpl server;
+    CatchersServer server;
     ApplicationOptions options;
     public Long offset;
     MessageSender messageSender;
@@ -22,34 +25,18 @@ public class BotInterfaceImpl implements BotInterface {
 
     }
 
-    @Autowired
-    public BotInterfaceImpl(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
-        server = applicationContext.getBean(CatchersServerImpl.class);
-        options = applicationContext.getBean(ApplicationOptions.class);
+//    @Autowired
+    public BotInterfaceImpl(CatchersServer server, ApplicationOptions options, MessageSender messageSender) {
+//        this.applicationContext = applicationContext;
         offset = 0L;
-        messageSender = applicationContext.getBean(MessageSender.class);
-    }
+        this.server = server;
+        this.options = options;
+        this.messageSender = messageSender;
 
-//    public static class MessageSender {
-//        ApplicationOptions options;
-//        public MessageSender(ApplicationOptions options) {
-//            this.options = options;
-//        }
-//
-//        public void sendMessage(Long chatId, String message) {
-//            RestTemplate restTemplate = new RestTemplate();
-//            String url = "https://api.telegram.org/bot"+
-//                    options.getBotId()+
-//                    ":"+
-//                    options.getApiKey()+
-//                    "/sendMessage?chat_id="+
-//                    chatId+
-//                    "&text="+
-//                    message;
-//            restTemplate.getForEntity(url, String.class);
-//        }
-//    }
+//        server = applicationContext.getBean(CatchersServerImpl.class);
+//        options = applicationContext.getBean(ApplicationOptions.class);
+//        messageSender = applicationContext.getBean(MessageSender.class);
+    }
 
     private String readOneMessage() {
         RestTemplate restTemplate = new RestTemplate();
@@ -70,6 +57,7 @@ public class BotInterfaceImpl implements BotInterface {
         return response;
     }
 
+    @Override
     public void start() {
         String message = "";
         do {
@@ -112,17 +100,18 @@ public class BotInterfaceImpl implements BotInterface {
     }
 
     @Override
-    public void allCatchers(Long chatId) {
-        messageSender.sendMessage(chatId, server.allCatchers());
+    public String allCatchers(Long chatId) {
+        return messageSender.sendMessage(chatId, server.allCatchers()).toString();
+
     }
 
     @Override
-    public void activeCatchers(Long chatId) {
-        messageSender.sendMessage(chatId, server.activeCatchers());
+    public String activeCatchers(Long chatId) {
+      return   messageSender.sendMessage(chatId, server.activeCatchers()).toString();
     }
 
     @Override
-    public void killCatcher(Long chatId) {
+    public String killCatcher(Long chatId) {
         messageSender.sendMessage(chatId, "Выберете кэтчер для остановки:\n"+server.activeCatchers());
         String response = readOneMessage();
         JSONObject jsonObject = new JSONObject(response);
@@ -138,11 +127,11 @@ public class BotInterfaceImpl implements BotInterface {
         if(result==2){
             resultMessage = "Catcher with id " + idCatcherToKill + "not found";
         }
-        messageSender.sendMessage(chatId, resultMessage);
+        return messageSender.sendMessage(chatId, resultMessage).toString();
     }
 
     @Override
-    public void newCatcher(Long chatId) {
+    public String newCatcher(Long chatId) {
         TicketOptions ticketOptions = new TicketOptions();
         messageSender.sendMessage(chatId, "Введите код станции отправления");
         ticketOptions.setCode0(getTextMessage(readOneMessage()));
@@ -156,7 +145,7 @@ public class BotInterfaceImpl implements BotInterface {
         ticketOptions.setType(getTextMessage(readOneMessage()));
         messageSender.sendMessage(chatId, "Введите максимальную цену билета");
         ticketOptions.setMaxPrice(Long.parseLong(getTextMessage(readOneMessage())));
-        server.newCatcher(ticketOptions, chatId);
+        return server.newCatcher(ticketOptions, chatId);
     }
 
     private void stopServer(){

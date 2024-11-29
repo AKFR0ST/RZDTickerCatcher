@@ -1,8 +1,12 @@
 package org.rzd.bot;
 
+import org.springframework.stereotype.Component;
+
+@Component("BotInterface")
 public interface BotInterface {
-    void allCatchers(Long chatId);
-    void activeCatchers(Long chatId);
-    void killCatcher(Long chatId);
-    void newCatcher(Long chatId);
+    String allCatchers(Long chatId);
+    String activeCatchers(Long chatId);
+    String killCatcher(Long chatId);
+    String newCatcher(Long chatId);
+    void start();
 }

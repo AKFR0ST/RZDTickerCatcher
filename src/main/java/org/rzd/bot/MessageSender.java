@@ -1,5 +1,7 @@
 package org.rzd.bot;
 
+import org.springframework.http.HttpStatusCode;
+
 public interface MessageSender {
-    void sendMessage(Long chatId, String message);
+    HttpStatusCode sendMessage(Long chatId, String message);
 }

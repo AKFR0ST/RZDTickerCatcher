@@ -2,7 +2,7 @@ package org.rzd.bot;
 
 import org.rzd.model.ApplicationOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,12 +11,12 @@ public class MessageSenderImpl implements MessageSender {
     ApplicationOptions options;
 
     @Autowired
-    MessageSenderImpl(ApplicationContext applicationContext) {
-        options = applicationContext.getBean(ApplicationOptions.class);
+    public MessageSenderImpl(ApplicationOptions applicationOptions) {
+        this.options = applicationOptions;
     }
 
     @Override
-    public void sendMessage(Long chatId, String message) {
+    public HttpStatusCode sendMessage(Long chatId, String message) {
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://api.telegram.org/bot"+
                 options.getBotId()+
@@ -26,6 +26,6 @@ public class MessageSenderImpl implements MessageSender {
                 chatId+
                 "&text="+
                 message;
-        restTemplate.getForEntity(url, String.class);
+        return restTemplate.getForEntity(url, String.class).getStatusCode();
     }
 }

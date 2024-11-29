@@ -1,27 +1,29 @@
 package org.rzd.server;
 
+import org.rzd.bot.BotInterface;
 import org.rzd.bot.BotInterfaceImpl;
 import org.rzd.model.Catcher;
 import org.rzd.model.TicketOptions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-@Component("CatchersServerImpl")
+//@Component("CatchersServerImpl")
 public class CatchersServerImpl implements CatchersServer {
 
     private ArrayList<Catcher> catchers;
     private Long lastId;
     ApplicationContext context;
-    public BotInterfaceImpl botInterfaceImpl;
+    public BotInterface botInterface;
 
     public CatchersServerImpl() {
 
     }
 
-    @Autowired
+//    @Autowired
     public CatchersServerImpl(ApplicationContext context) {
         this.context = context;
     }
@@ -31,7 +33,7 @@ public class CatchersServerImpl implements CatchersServer {
         System.out.println("Starting server...");
         catchers = new ArrayList<>();
         lastId = 0L;
-        botInterfaceImpl = context.getBean(BotInterfaceImpl.class);
+        botInterface = context.getBean(BotInterface.class);
 //        TicketOptions ticket2 = new TicketOptions(
 //                "2000000",
 //                "2010001",
@@ -40,7 +42,7 @@ public class CatchersServerImpl implements CatchersServer {
 //                "Сид",
 //                2000L);
 //        newCatcher(ticket2, 519674552L);
-        botInterfaceImpl.start();
+        botInterface.start();
 
     }
 
@@ -52,9 +54,12 @@ public class CatchersServerImpl implements CatchersServer {
     }
 
     @Override
-    public void newCatcher(TicketOptions ticketOptions, Long chatId) {
+    public String newCatcher(TicketOptions ticketOptions, Long chatId) {
         Catcher catcher = new Catcher(++lastId, chatId, ticketOptions, context);
         catchers.add(catcher);
+        //TODO
+        //Test for success create
+        return "Catcher " + catcher.getId() + " successfully created";
     }
 
     @Override

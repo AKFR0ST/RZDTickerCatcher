@@ -4,9 +4,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.rzd.bot.MessageSenderImpl;
 import org.rzd.config.ApplicationConfig;
+import org.rzd.config.ApplicationConfigTest;
 import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
+import org.rzd.server.CatchersServerImpl;
 import org.rzd.services.LoaderTrains;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -22,11 +25,15 @@ public class CatcherTest {
     ApplicationContext context;
     LoaderTrains loaderTrains;
     TicketOptions ticketOptions;
+    CatchersServerImpl server;
+
 
     @BeforeEach
     void init() {
-        context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+        context = new AnnotationConfigApplicationContext(ApplicationConfigTest.class);
 //        ticketOptions = context.getBean("getTicketOptions", TicketOptions.class);
+        server = context.getBean(CatchersServerImpl.class);
+//        server.start();
         ticketOptions = new TicketOptions(
                 "2000000",
                 "2010001",
@@ -46,5 +53,12 @@ public class CatcherTest {
         List<Train> trainList =  loaderTrains.getTrainList();
         Assertions.assertNotNull(trainList);
     }
+
+//    @Test
+//    public void testServerAllCatchers() {
+//        server.start();
+//        String res = server.allCatchers();
+//        Assertions.assertEquals(res, "/Catchers");
+//    }
 
 }
