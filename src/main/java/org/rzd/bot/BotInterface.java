@@ -7,6 +7,6 @@ public interface BotInterface {
     String allCatchers(Long chatId);
     String activeCatchers(Long chatId);
     String killCatcher(Long chatId);
-    String newCatcher(Long chatId);
+    Long newCatcher(Long chatId);
     void start();
 }

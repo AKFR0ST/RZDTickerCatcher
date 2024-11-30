@@ -21,7 +21,7 @@ public class TicketCatcher extends Thread {
         context = applicationContext;
         applicationOptions = context.getBean("getApplicationOptions", ApplicationOptions.class);
         this.ticketOptions = ticketOptions;
-        loaderTrains = new LoaderTrains(context, ticketOptions);
+        loaderTrains = context.getBean("getLoaderTrains", LoaderTrains.class);
         messageSender = context.getBean("MessageSenderImpl", MessageSender.class);
         this.chatId = chatId;
     }
@@ -43,7 +43,7 @@ public class TicketCatcher extends Thread {
         receiveStopCommand = false;
 
         while (!gotcha&&!receiveStopCommand) {
-            List<Train> trainList = loaderTrains.getTrainList();
+            List<Train> trainList = loaderTrains.getTrainList(ticketOptions);
             for (Train train : trainList) {
                 if(train.getNumber().equals(ticketOptions.getNumber())){
                     for (Car car : train.getCarList()) {

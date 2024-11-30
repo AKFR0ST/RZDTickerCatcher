@@ -8,7 +8,7 @@ public class TicketOptions {
     private String code1;
     private String dt0;
     private String number;
-    private String type;
+    private Long type;
     private Long maxPrice;
 
     public TicketOptions() {
@@ -16,7 +16,7 @@ public class TicketOptions {
     }
 
 
-    public TicketOptions(String code0, String code1, String dt0, String number, String type, Long maxPrice) {
+    public TicketOptions(String code0, String code1, String dt0, String number, Long type, Long maxPrice) {
         this.code0 = code0;
         this.code1 = code1;
         this.dt0 = dt0;
@@ -57,11 +57,11 @@ public class TicketOptions {
         this.number = number;
     }
 
-    public String getType() {
+    public Long getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Long type) {
         this.type = type;
     }
 
@@ -83,9 +83,7 @@ public class TicketOptions {
                 "\t->\t" +
                 code1 +
                 "\t" +
-                type +
+                type.toString() +
                 "\n";
     }
-
-
 }

@@ -1,21 +1,21 @@
 package org.rzd.model;
 
 public class Car {
-    private String type;
+    private Long type;
     private Long freeSeats;
     private Long tariff;
 
-    public Car(String type, Long freeSeats, Long tariff) {
+    public Car(Long type, Long freeSeats, Long tariff) {
         this.type = type;
         this.freeSeats = freeSeats;
         this.tariff = tariff;
     }
 
-    public String getType() {
+    public Long getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(Long type) {
         this.type = type;
     }
 
@@ -37,6 +37,16 @@ public class Car {
 
     @Override
     public String toString(){
-        return type + " " + freeSeats + " " + tariff;
+        int itype = Math.toIntExact(type);
+        String stringType = switch (itype) {
+            case 1 -> "Плац";
+            case 2 -> "Общ";
+            case 3 -> "Сид";
+            case 4 -> "Купе";
+            case 5 -> "Мяг";
+            case 6 -> "Люкс";
+            default -> "";
+        };
+        return stringType + " " + freeSeats + " " + tariff+"р";
     }
 }

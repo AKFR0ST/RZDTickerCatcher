@@ -3,17 +3,15 @@ package org.rzd.bot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rzd.config.ApplicationConfig;
-import org.rzd.config.ApplicationConfigTest;
 import org.rzd.model.ApplicationOptions;
 import org.rzd.model.TicketOptions;
 import org.rzd.server.CatchersServer;
 import org.rzd.server.CatchersServerImpl;
-import org.rzd.server.CatchersServerMockImpl;
+import org.rzd.services.LoaderTrains;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.HttpStatusCode;
 import org.testng.Assert;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +22,8 @@ class BotInterfaceTest {
     CatchersServer catchersServerMock;
     ApplicationOptions applicationOptionsMock;
     MessageSender messageSenderMock;
+    MessageReceiver messageReceiverMock;
+    LoaderTrains loaderTrainsMock;
 
     @BeforeEach
     void setUp() {
@@ -37,8 +37,11 @@ class BotInterfaceTest {
         catchersServerMock = mock(CatchersServerImpl.class);
         applicationOptionsMock = mock(ApplicationOptions.class);
         messageSenderMock = mock(MessageSender.class);
+        messageReceiverMock = mock(MessageReceiver.class);
+        loaderTrainsMock = mock(LoaderTrains.class);
 
-        botInterface = new BotInterfaceImpl(catchersServerMock,applicationOptionsMock, messageSenderMock);
+
+        botInterface = new BotInterfaceImpl(catchersServerMock,applicationOptionsMock, messageSenderMock, messageReceiverMock, loaderTrainsMock);
 
     }
 
@@ -67,7 +70,7 @@ class BotInterfaceTest {
 
     @Test
     void newCatcher() {
-        when(catchersServerMock.newCatcher(new TicketOptions("0", "0", "0", "0", "0", 0L), 0L)).thenReturn("\"Catcher 0 successfully created\"");
+        when(catchersServerMock.newCatcher(new TicketOptions("0", "0", "0", "0", 0L, 0L), 0L)).thenReturn(1L);
         when(messageSenderMock.sendMessage(0L, "200 OK")).thenReturn(HttpStatusCode.valueOf(200));
         //TODO Create Test
         Assert.assertEquals(botInterface.newCatcher(0L), "\"Catcher 0 successfully created\"");

@@ -1,13 +1,9 @@
 package org.rzd.server;
 
 import org.rzd.bot.BotInterface;
-import org.rzd.bot.BotInterfaceImpl;
 import org.rzd.model.Catcher;
 import org.rzd.model.TicketOptions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -18,9 +14,7 @@ public class CatchersServerImpl implements CatchersServer {
     private Long lastId;
     ApplicationContext context;
     public BotInterface botInterface;
-
     public CatchersServerImpl() {
-
     }
 
 //    @Autowired
@@ -54,12 +48,13 @@ public class CatchersServerImpl implements CatchersServer {
     }
 
     @Override
-    public String newCatcher(TicketOptions ticketOptions, Long chatId) {
+    public Long newCatcher(TicketOptions ticketOptions, Long chatId) {
         Catcher catcher = new Catcher(++lastId, chatId, ticketOptions, context);
         catchers.add(catcher);
-        //TODO
-        //Test for success create
-        return "Catcher " + catcher.getId() + " successfully created";
+        if (catcherIsActive(catcher.getId())){
+            return catcher.getId();
+        }
+        else return -1L;
     }
 
     @Override
@@ -129,5 +124,14 @@ public class CatchersServerImpl implements CatchersServer {
             }
         }
         return null;
+    }
+
+    private Boolean catcherIsActive(Long id) {
+        for (Catcher catcher : catchers) {
+            if (catcher.getId().equals(id)) {
+                return catcher.getTicketCatcher().getState() != Thread.State.TERMINATED;
+            }
+        }
+        return false;
     }
 }

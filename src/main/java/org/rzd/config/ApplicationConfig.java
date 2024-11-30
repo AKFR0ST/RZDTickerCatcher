@@ -4,6 +4,8 @@ import org.rzd.bot.*;
 import org.rzd.model.ApplicationOptions;
 import org.rzd.server.CatchersServer;
 import org.rzd.server.CatchersServerImpl;
+import org.rzd.services.LoaderTrains;
+import org.rzd.services.LoaderTrainsImpl;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -37,13 +39,18 @@ public class ApplicationConfig {
     }
     
     @Bean
-    public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender){
-        return new BotInterfaceImpl(server, options, messageSender);
+    public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrainsImpl loaderTrains){
+        return new BotInterfaceImpl(server, options, messageSender, messageReceiver, loaderTrains);
     }
 
     @Bean
     public CatchersServer getCatchersServer(ApplicationContext applicationContext){
         return new CatchersServerImpl(applicationContext);
+    }
+
+    @Bean
+    public LoaderTrains getLoaderTrains(ApplicationContext applicationContext){
+        return new LoaderTrainsImpl(applicationContext);
     }
 
 
