@@ -1,10 +1,8 @@
 package org.rzd.application;
 
-import org.rzd.bot.BotInterfaceImpl;
 import org.rzd.config.ApplicationConfig;
 import org.rzd.server.CatchersServer;
 import org.rzd.server.CatchersServerImpl;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

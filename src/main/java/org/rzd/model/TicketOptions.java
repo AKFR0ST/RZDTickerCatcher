@@ -1,8 +1,5 @@
 package org.rzd.model;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class TicketOptions {
     private String code0;
     private String code1;

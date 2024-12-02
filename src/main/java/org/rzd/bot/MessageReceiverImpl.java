@@ -36,4 +36,9 @@ public class MessageReceiverImpl implements MessageReceiver {
             offset = jsonObject.getJSONArray("result").getJSONObject(0).getLong("update_id") + 1;
             return response;
     }
+
+    public String getTextMessage() {
+        JSONObject jsonObject = new JSONObject(messageReceive());
+        return jsonObject.getJSONArray("result").getJSONObject(0).getJSONObject("message").getString("text");
+    }
 }

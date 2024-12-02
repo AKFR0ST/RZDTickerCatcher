@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.List;
 
-//@Component ("BotInterfaceImpl")
+//@Component("BotInterfaceImpl")
 public class BotInterfaceImpl implements BotInterface {
 
     ApplicationContext applicationContext;
@@ -89,19 +89,17 @@ public class BotInterfaceImpl implements BotInterface {
     @Override
     public String killCatcher(Long chatId) {
         messageSender.sendMessage(chatId, "Выберете кэтчер для остановки:\n"+server.activeCatchers());
-        String response = messageReceiver.messageReceive();
-        JSONObject jsonObject = new JSONObject(response);
-        String idCatcherToKill = jsonObject.getJSONArray("result").getJSONObject(0).getJSONObject("message").getString("text");
+        String idCatcherToKill = messageReceiver.getTextMessage();
         int result = server.killCatcherById(Long.parseLong(idCatcherToKill));
         String resultMessage = "";
         if(result==0){
             resultMessage = "Catcher with id " + idCatcherToKill + "killed";
         }
         if(result==1){
-            resultMessage = "Catcher with id " + idCatcherToKill + "not killed";
+            resultMessage = "Catcher with id " + idCatcherToKill + "not found";
         }
         if(result==2){
-            resultMessage = "Catcher with id " + idCatcherToKill + "not found";
+            resultMessage = "Catcher with id " + idCatcherToKill + "not killed";
         }
         return messageSender.sendMessage(chatId, resultMessage).toString();
     }
@@ -115,7 +113,7 @@ public class BotInterfaceImpl implements BotInterface {
         {
             messageSender.sendMessage(chatId, "Введите станцию назначения");
         }
-        List<String> stationList = loaderTrains.getStationList(getTextMessage(messageReceiver.messageReceive()));
+        List<String> stationList = loaderTrains.getStationList(messageReceiver.getTextMessage());
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < stationList.size(); i++) {
             stringBuilder.append(i+1);
@@ -129,7 +127,7 @@ public class BotInterfaceImpl implements BotInterface {
         else {
             messageSender.sendMessage(chatId, "Выберете станцию назначения\n"+stringBuilder.toString());
         }
-        String train = stationList.get(Integer.parseInt(getTextMessage(messageReceiver.messageReceive()))-1);
+        String train = stationList.get(Integer.parseInt(messageReceiver.getTextMessage())-1);
         return train.substring(train.lastIndexOf(" ")+1);
     }
 
@@ -142,7 +140,7 @@ public class BotInterfaceImpl implements BotInterface {
             stringBuilder.append(trainList.get(i));
         }
         messageSender.sendMessage(chatId, "Выберете поезд или введите его номер: \n"+stringBuilder.toString());
-        String trainsNumber = getTextMessage(messageReceiver.messageReceive());
+        String trainsNumber = messageReceiver.getTextMessage();
         if(trainsNumber.length()<2){
             trainsNumber = trainList.get(Integer.parseInt(trainsNumber)-1).getNumber();
         }
@@ -157,12 +155,12 @@ public class BotInterfaceImpl implements BotInterface {
         ticketOptions.setCode0(askStationCode(chatId, true));
         ticketOptions.setCode1(askStationCode(chatId, false));
         messageSender.sendMessage(chatId, "Введите дату отправления");
-        ticketOptions.setDt0(getTextMessage(messageReceiver.messageReceive()));
+        ticketOptions.setDt0(messageReceiver.getTextMessage());
         ticketOptions.setNumber(askTrainsNumber(chatId, ticketOptions));
         messageSender.sendMessage(chatId, "Введите тип вагона\n 1 - Плац \n 2 - Общ \n 3 - Сид \n 4 - Купе \n 5 - Мяг \n 6 - Люкс");
-        ticketOptions.setType(Long.parseLong(getTextMessage(messageReceiver.messageReceive())));
+        ticketOptions.setType(Long.parseLong(messageReceiver.getTextMessage()));
         messageSender.sendMessage(chatId, "Введите максимальную цену билета");
-        ticketOptions.setMaxPrice(Long.parseLong(getTextMessage(messageReceiver.messageReceive())));
+        ticketOptions.setMaxPrice(Long.parseLong(messageReceiver.getTextMessage()));
         Long catcherId = server.newCatcher(ticketOptions, chatId);
         if( catcherId<0 ){
             messageSender.sendMessage(chatId, "adding catcher failed");
@@ -178,9 +176,6 @@ public class BotInterfaceImpl implements BotInterface {
         server.stop();
     }
 
-    private String getTextMessage(String response) {
-        JSONObject jsonObject = new JSONObject(response);
-        return jsonObject.getJSONArray("result").getJSONObject(0).getJSONObject("message").getString("text");
-    }
+
 
 }

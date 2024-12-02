@@ -1,5 +1,6 @@
 package org.rzd.config;
 
+import org.mockito.Mockito;
 import org.rzd.bot.*;
 import org.rzd.model.ApplicationOptions;
 import org.rzd.server.CatchersServerImpl;
@@ -8,12 +9,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
-//@Profile("dev")
+//@Profile("test")
 @Configuration
 @ComponentScan("org.rzd")
 @PropertySource(value = "classpath:app.properties", encoding = "UTF-8")
 
-public class ApplicationConfig {
+public class ApplicationConfigTest {
     @Value("${app.urlApi}")
     private String urlApi;
     @Value("${app.layer_id}")
@@ -26,16 +27,13 @@ public class ApplicationConfig {
     private String apiKey;
 
     @Bean
-    public ApplicationOptions getApplicationOptions() {
+    public ApplicationOptions getApplicationOptions(){
         return new ApplicationOptions(urlApi, layer_id, timeout, botId, apiKey);
     }
 
     @Bean
     public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrainsImpl loaderTrains){
-        return new BotInterfaceImpl(server, options, messageSender, messageReceiver, loaderTrains);
+        return Mockito.mock(BotInterface.class);
     }
+
 }
-
-
-
-

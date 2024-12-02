@@ -3,21 +3,24 @@ package org.rzd.server;
 import org.rzd.bot.BotInterface;
 import org.rzd.model.Catcher;
 import org.rzd.model.TicketOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
-//@Component("CatchersServerImpl")
+@Component("CatchersServerImpl")
 public class CatchersServerImpl implements CatchersServer {
 
-    private ArrayList<Catcher> catchers;
+    protected ArrayList<Catcher> catchers;
     private Long lastId;
     ApplicationContext context;
     public BotInterface botInterface;
-    public CatchersServerImpl() {
-    }
 
-//    @Autowired
+//    public CatchersServerImpl() {
+//    }
+
+    @Autowired
     public CatchersServerImpl(ApplicationContext context) {
         this.context = context;
     }
@@ -28,16 +31,7 @@ public class CatchersServerImpl implements CatchersServer {
         catchers = new ArrayList<>();
         lastId = 0L;
         botInterface = context.getBean(BotInterface.class);
-//        TicketOptions ticket2 = new TicketOptions(
-//                "2000000",
-//                "2010001",
-//                "29.11.2024",
-//                "106Я",
-//                "Сид",
-//                2000L);
-//        newCatcher(ticket2, 519674552L);
         botInterface.start();
-
     }
 
     @Override
@@ -95,6 +89,12 @@ public class CatchersServerImpl implements CatchersServer {
                 catcher.getTicketCatcher().sendStopCommand();
             }
         }
+        try {
+            Thread.sleep(10);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         int result = 1;
         for (Catcher catcher : catchers) {
             if(catcher.getId().equals(id)){
@@ -114,6 +114,12 @@ public class CatchersServerImpl implements CatchersServer {
         for (Catcher catcher : catchers) {
                 catcher.getTicketCatcher().interrupt();
                 catcher.getTicketCatcher().sendStopCommand();
+        }
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

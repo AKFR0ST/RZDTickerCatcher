@@ -21,7 +21,7 @@ public class TicketCatcher extends Thread {
         context = applicationContext;
         applicationOptions = context.getBean("getApplicationOptions", ApplicationOptions.class);
         this.ticketOptions = ticketOptions;
-        loaderTrains = context.getBean("getLoaderTrains", LoaderTrains.class);
+        loaderTrains = context.getBean("LoaderTrains", LoaderTrains.class);
         messageSender = context.getBean("MessageSenderImpl", MessageSender.class);
         this.chatId = chatId;
     }
