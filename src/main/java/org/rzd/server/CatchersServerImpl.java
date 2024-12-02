@@ -17,9 +17,6 @@ public class CatchersServerImpl implements CatchersServer {
     ApplicationContext context;
     public BotInterface botInterface;
 
-//    public CatchersServerImpl() {
-//    }
-
     @Autowired
     public CatchersServerImpl(ApplicationContext context) {
         this.context = context;
@@ -45,10 +42,9 @@ public class CatchersServerImpl implements CatchersServer {
     public Long newCatcher(TicketOptions ticketOptions, Long chatId) {
         Catcher catcher = new Catcher(++lastId, chatId, ticketOptions, context);
         catchers.add(catcher);
-        if (catcherIsActive(catcher.getId())){
+        if (catcherIsActive(catcher.getId())) {
             return catcher.getId();
-        }
-        else return -1L;
+        } else return -1L;
     }
 
     @Override
@@ -56,7 +52,7 @@ public class CatchersServerImpl implements CatchersServer {
         StringBuilder sb = new StringBuilder();
         sb.append("Active catchers:\n");
         for (Catcher catcher : catchers) {
-            if(catcher.getTicketCatcher().getState()!= Thread.State.TERMINATED){
+            if (catcher.getTicketCatcher().getState() != Thread.State.TERMINATED) {
                 sb.append("Catcher id :").append(catcher.getId()).append(" State: active ").
                         append(catcher.getTicketCatcher().getTicketOptions().toString());
             }
@@ -70,10 +66,9 @@ public class CatchersServerImpl implements CatchersServer {
         sb.append("Catchers:\n");
         for (Catcher catcher : catchers) {
             sb.append("Catcher id:").append(catcher.getId()).append(" State: ");
-            if(catcher.getTicketCatcher().getState()== Thread.State.TERMINATED){
+            if (catcher.getTicketCatcher().getState() == Thread.State.TERMINATED) {
                 sb.append("finished ");
-            }
-            else {
+            } else {
                 sb.append("active ");
             }
             sb.append(catcher.getTicketCatcher().getTicketOptions().toString());
@@ -82,26 +77,24 @@ public class CatchersServerImpl implements CatchersServer {
     }
 
     @Override
-    public int killCatcherById(Long id){
+    public int killCatcherById(Long id) {
         for (Catcher catcher : catchers) {
-            if(catcher.getId().equals(id)){
+            if (catcher.getId().equals(id)) {
                 catcher.getTicketCatcher().interrupt();
                 catcher.getTicketCatcher().sendStopCommand();
             }
         }
         try {
             Thread.sleep(10);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         int result = 1;
         for (Catcher catcher : catchers) {
-            if(catcher.getId().equals(id)){
-                if(catcher.getTicketCatcher().getState()== Thread.State.TERMINATED){
+            if (catcher.getId().equals(id)) {
+                if (catcher.getTicketCatcher().getState() == Thread.State.TERMINATED) {
                     result = 0;
-                }
-                else{
+                } else {
                     result = 2;
                 }
             }
@@ -112,20 +105,19 @@ public class CatchersServerImpl implements CatchersServer {
     @Override
     public void killAllCatchers() {
         for (Catcher catcher : catchers) {
-                catcher.getTicketCatcher().interrupt();
-                catcher.getTicketCatcher().sendStopCommand();
+            catcher.getTicketCatcher().interrupt();
+            catcher.getTicketCatcher().sendStopCommand();
         }
         try {
             Thread.sleep(1000);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public Thread.State checkCatcherStatus(Long id){
+    public Thread.State checkCatcherStatus(Long id) {
         for (Catcher catcher : catchers) {
-            if(catcher.getId().equals(id)){
+            if (catcher.getId().equals(id)) {
                 return catcher.getTicketCatcher().getState();
             }
         }

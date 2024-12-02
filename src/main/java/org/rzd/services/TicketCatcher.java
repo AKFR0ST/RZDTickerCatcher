@@ -6,6 +6,7 @@ import org.rzd.model.Car;
 import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
 import org.springframework.context.ApplicationContext;
+
 import java.util.List;
 
 public class TicketCatcher extends Thread {
@@ -34,7 +35,7 @@ public class TicketCatcher extends Thread {
         return ticketOptions;
     }
 
-    public void sendStopCommand(){
+    public void sendStopCommand() {
         receiveStopCommand = true;
     }
 
@@ -42,27 +43,25 @@ public class TicketCatcher extends Thread {
         boolean gotcha = false;
         receiveStopCommand = false;
 
-        while (!gotcha&&!receiveStopCommand) {
+        while (!gotcha && !receiveStopCommand) {
             List<Train> trainList = loaderTrains.getTrainList(ticketOptions);
             for (Train train : trainList) {
-                if(train.getNumber().equals(ticketOptions.getNumber())){
+                if (train.getNumber().equals(ticketOptions.getNumber())) {
                     for (Car car : train.getCarList()) {
-                        if(car.getType().equals(ticketOptions.getType())&&((car.getFreeSeats()>0)&&(car.getTariff()< ticketOptions.getMaxPrice()))){
+                        if (car.getType().equals(ticketOptions.getType()) && ((car.getFreeSeats() > 0) && (car.getTariff() < ticketOptions.getMaxPrice()))) {
                             gotcha = true;
                             System.out.println("GOTCHA!!!");
-                            messageSender.sendMessage(chatId, "The ticket is caught! \n Train: " + train.getNumber() +"\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
+                            messageSender.sendMessage(chatId, "The ticket is caught! \n Train: " + train.getNumber() + "\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
                         }
                     }
                 }
             }
             try {
-                if(!gotcha)
-                {
+                if (!gotcha) {
                     System.out.println("Ticket not found");
                     Thread.sleep(applicationOptions.getTimeout());
                 }
-            }
-            catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 System.err.println("Interrupted Exception");
             }
         }

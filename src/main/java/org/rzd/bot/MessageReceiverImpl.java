@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 @Component("MessageReceiverImpl")
 public class MessageReceiverImpl implements MessageReceiver {
     Long offset;
-    ApplicationOptions  options;
+    ApplicationOptions options;
 
     @Autowired
     public MessageReceiverImpl(ApplicationOptions applicationOptions) {
@@ -19,22 +19,22 @@ public class MessageReceiverImpl implements MessageReceiver {
 
     @Override
     public String messageReceive() {
-                    RestTemplate restTemplate = new RestTemplate();
-            String baseUrl = "https://api.telegram.org/bot%s:%s/getUpdates?limit=1&offset=%d";
-            String url = String.format(baseUrl, options.getBotId(), options.getApiKey(), offset);
-            String response;
-            JSONObject jsonObject;
+        RestTemplate restTemplate = new RestTemplate();
+        String baseUrl = "https://api.telegram.org/bot%s:%s/getUpdates?limit=1&offset=%d";
+        String url = String.format(baseUrl, options.getBotId(), options.getApiKey(), offset);
+        String response;
+        JSONObject jsonObject;
 
-            do {
-                response = restTemplate.getForEntity(url, String.class).getBody();
-                if(response==null){
-                    throw new RuntimeException("Response is null");
-                }
-                jsonObject = new JSONObject(response);
-            } while (jsonObject.getJSONArray("result").isEmpty());
+        do {
+            response = restTemplate.getForEntity(url, String.class).getBody();
+            if (response == null) {
+                throw new RuntimeException("Response is null");
+            }
+            jsonObject = new JSONObject(response);
+        } while (jsonObject.getJSONArray("result").isEmpty());
 
-            offset = jsonObject.getJSONArray("result").getJSONObject(0).getLong("update_id") + 1;
-            return response;
+        offset = jsonObject.getJSONArray("result").getJSONObject(0).getLong("update_id") + 1;
+        return response;
     }
 
     public String getTextMessage() {

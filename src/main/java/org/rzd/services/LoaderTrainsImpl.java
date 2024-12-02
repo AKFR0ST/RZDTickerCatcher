@@ -45,7 +45,7 @@ public class LoaderTrainsImpl implements LoaderTrains {
     }
 
     @Override
-    public List<String> getStationList(String mask)  {
+    public List<String> getStationList(String mask) {
         List<String> stationList = new ArrayList<>();
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
         String encodedMask = URLEncoder.encode(mask, StandardCharsets.UTF_8);
@@ -66,12 +66,11 @@ public class LoaderTrainsImpl implements LoaderTrains {
     }
 
     @Override
-    public List<Train> getTrainList(TicketOptions ticketOptions)  {
+    public List<Train> getTrainList(TicketOptions ticketOptions) {
         Long rid = getRid(ticketOptions);
-        try{
+        try {
             Thread.sleep(1000);
-        }
-        catch (InterruptedException e){
+        } catch (InterruptedException e) {
             System.err.println("Interrupted Exception");
         }
         List<Train> trainList = new ArrayList<>();

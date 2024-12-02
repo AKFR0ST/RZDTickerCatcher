@@ -24,7 +24,7 @@ public class BotInterfaceImpl implements BotInterface {
 
     }
 
-//    @Autowired
+    //    @Autowired
     public BotInterfaceImpl(CatchersServer server, ApplicationOptions options, MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrains loaderTrains) {
         this.server = server;
         this.options = options;
@@ -72,7 +72,7 @@ public class BotInterfaceImpl implements BotInterface {
                         break;
                 }
             }
-        } while (!message.equals("/stop")) ;
+        } while (!message.equals("/stop"));
     }
 
     @Override
@@ -83,70 +83,66 @@ public class BotInterfaceImpl implements BotInterface {
 
     @Override
     public String activeCatchers(Long chatId) {
-      return   messageSender.sendMessage(chatId, server.activeCatchers()).toString();
+        return messageSender.sendMessage(chatId, server.activeCatchers()).toString();
     }
 
     @Override
     public String killCatcher(Long chatId) {
-        messageSender.sendMessage(chatId, "Выберете кэтчер для остановки:\n"+server.activeCatchers());
+        messageSender.sendMessage(chatId, "Выберете кэтчер для остановки:\n" + server.activeCatchers());
         String idCatcherToKill = messageReceiver.getTextMessage();
         int result = server.killCatcherById(Long.parseLong(idCatcherToKill));
         String resultMessage = "";
-        if(result==0){
+        if (result == 0) {
             resultMessage = "Catcher with id " + idCatcherToKill + "killed";
         }
-        if(result==1){
+        if (result == 1) {
             resultMessage = "Catcher with id " + idCatcherToKill + "not found";
         }
-        if(result==2){
+        if (result == 2) {
             resultMessage = "Catcher with id " + idCatcherToKill + "not killed";
         }
         return messageSender.sendMessage(chatId, resultMessage).toString();
     }
 
-    private String askStationCode(Long chatId, boolean isDepartStation){
+    private String askStationCode(Long chatId, boolean isDepartStation) {
 
-        if(isDepartStation){
+        if (isDepartStation) {
             messageSender.sendMessage(chatId, "Введите станцию отправления");
-        }
-        else
-        {
+        } else {
             messageSender.sendMessage(chatId, "Введите станцию назначения");
         }
         List<String> stationList = loaderTrains.getStationList(messageReceiver.getTextMessage());
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < stationList.size(); i++) {
-            stringBuilder.append(i+1);
+            stringBuilder.append(i + 1);
             stringBuilder.append("\t");
             stringBuilder.append(stationList.get(i));
             stringBuilder.append("\n");
         }
-        if(isDepartStation){
-            messageSender.sendMessage(chatId, "Выберете станцию отправления\n"+stringBuilder.toString());
+        if (isDepartStation) {
+            messageSender.sendMessage(chatId, "Выберете станцию отправления\n" + stringBuilder);
+        } else {
+            messageSender.sendMessage(chatId, "Выберете станцию назначения\n" + stringBuilder);
         }
-        else {
-            messageSender.sendMessage(chatId, "Выберете станцию назначения\n"+stringBuilder.toString());
-        }
-        String train = stationList.get(Integer.parseInt(messageReceiver.getTextMessage())-1);
-        return train.substring(train.lastIndexOf(" ")+1);
+        String train = stationList.get(Integer.parseInt(messageReceiver.getTextMessage()) - 1);
+        return train.substring(train.lastIndexOf(" ") + 1);
     }
 
-    private String askTrainsNumber(Long chatId, TicketOptions ticketOptions){
+    private String askTrainsNumber(Long chatId, TicketOptions ticketOptions) {
         List<Train> trainList = loaderTrains.getTrainList(ticketOptions);
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < trainList.size(); i++) {
-            stringBuilder.append(i+1);
+            stringBuilder.append(i + 1);
             stringBuilder.append("\t");
             stringBuilder.append(trainList.get(i));
         }
-        messageSender.sendMessage(chatId, "Выберете поезд или введите его номер: \n"+stringBuilder.toString());
+        messageSender.sendMessage(chatId, "Выберете поезд или введите его номер: \n" + stringBuilder);
         String trainsNumber = messageReceiver.getTextMessage();
-        if(trainsNumber.length()<2){
-            trainsNumber = trainList.get(Integer.parseInt(trainsNumber)-1).getNumber();
+        if (trainsNumber.length() < 2) {
+            trainsNumber = trainList.get(Integer.parseInt(trainsNumber) - 1).getNumber();
         }
         return trainsNumber;
     }
-
 
 
     @Override
@@ -162,20 +158,17 @@ public class BotInterfaceImpl implements BotInterface {
         messageSender.sendMessage(chatId, "Введите максимальную цену билета");
         ticketOptions.setMaxPrice(Long.parseLong(messageReceiver.getTextMessage()));
         Long catcherId = server.newCatcher(ticketOptions, chatId);
-        if( catcherId<0 ){
+        if (catcherId < 0) {
             messageSender.sendMessage(chatId, "adding catcher failed");
-        }
-        else
-        {
-            messageSender.sendMessage(chatId, "adding catcher with id "+catcherId+" successfully");
+        } else {
+            messageSender.sendMessage(chatId, "adding catcher with id " + catcherId + " successfully");
         }
         return catcherId;
     }
 
-    private void stopServer(){
+    private void stopServer() {
         server.stop();
     }
-
 
 
 }

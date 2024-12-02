@@ -6,11 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rzd.config.ApplicationConfig;
 import org.rzd.model.ApplicationOptions;
-import org.rzd.model.Car;
-import org.rzd.model.TicketOptions;
 import org.rzd.model.Train;
 import org.rzd.server.CatchersServer;
-import org.rzd.server.CatchersServerImpl;
 import org.rzd.services.LoaderTrains;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.HttpStatusCode;
@@ -43,7 +40,7 @@ class BotInterfaceTest {
         catchersServerMock = mock(CatchersServer.class);
         applicationOptionsMock = mock(ApplicationOptions.class);
 
-        botInterface = new BotInterfaceImpl(catchersServerMock,applicationOptionsMock, messageSenderMock, messageReceiverMock, loaderTrainsMock);
+        botInterface = new BotInterfaceImpl(catchersServerMock, applicationOptionsMock, messageSenderMock, messageReceiverMock, loaderTrainsMock);
 
     }
 
@@ -65,7 +62,7 @@ class BotInterfaceTest {
     void killCatcher() {
         when(catchersServerMock.killCatcherById(1L)).thenReturn(0);
         when(catchersServerMock.activeCatchers()).thenReturn("1");
-        when(messageSenderMock.sendMessage(any(),any())).thenReturn(HttpStatusCode.valueOf(200));
+        when(messageSenderMock.sendMessage(any(), any())).thenReturn(HttpStatusCode.valueOf(200));
         when(messageReceiverMock.getTextMessage()).thenReturn("1");
         String response = botInterface.killCatcher(1L);
         Assert.assertEquals(response, "200 OK");
@@ -74,14 +71,14 @@ class BotInterfaceTest {
     @Test
     void newCatcher() {
         when(catchersServerMock.newCatcher(any(), any())).thenReturn(1L);
-        Train t1 = new Train("1", "00:00", "00:01", new ArrayList<Car>());
+        Train t1 = new Train("1", "00:00", "00:01", new ArrayList<>());
         ArrayList<Train> trains = new ArrayList<>();
         trains.add(t1);
         when(loaderTrainsMock.getTrainList(any())).thenReturn(trains);
         List<String> stationList = new ArrayList<>();
         stationList.add("Station 2000000");
         when(loaderTrainsMock.getStationList(any())).thenReturn(stationList);
-        when(messageSenderMock.sendMessage(any(),any())).thenReturn(HttpStatusCode.valueOf(200));
+        when(messageSenderMock.sendMessage(any(), any())).thenReturn(HttpStatusCode.valueOf(200));
         when(messageReceiverMock.getTextMessage()).thenReturn("1");
         Assert.assertEquals(botInterface.newCatcher(0L), 1L);
     }

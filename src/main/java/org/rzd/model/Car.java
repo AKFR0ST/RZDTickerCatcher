@@ -36,7 +36,7 @@ public class Car {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         int itype = Math.toIntExact(type);
         String stringType = switch (itype) {
             case 1 -> "Плац";
@@ -47,6 +47,6 @@ public class Car {
             case 6 -> "Люкс";
             default -> "";
         };
-        return stringType + " " + freeSeats + " " + tariff+"р";
+        return stringType + " " + freeSeats + " " + tariff + "р";
     }
 }

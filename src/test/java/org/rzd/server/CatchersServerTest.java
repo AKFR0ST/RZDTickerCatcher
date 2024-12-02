@@ -14,7 +14,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CatchersServerTest {
-static CatchersServerImpl catchersServer;
+    static CatchersServerImpl catchersServer;
     static String formattedDate;
 
 
@@ -39,7 +39,6 @@ static CatchersServerImpl catchersServer;
     }
 
 
-
     @Test
     void newCatcher() {
         TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
@@ -58,9 +57,9 @@ static CatchersServerImpl catchersServer;
         TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
         catchersServer.newCatcher(t1, 519674552L);
         assertEquals(catchersServer.activeCatchers(), """
-Active catchers:
-Catcher id :3 State: active 03.12.2024	0	2010001	->	2000000	6
-Catcher id :4 State: active 03.12.2024	0	2010001	->	2000000	6
+                Active catchers:
+                Catcher id :3 State: active 03.12.2024	0	2010001	->	2000000	6
+                Catcher id :4 State: active 03.12.2024	0	2010001	->	2000000	6
                 """);
     }
 
@@ -85,7 +84,6 @@ Catcher id :4 State: active 03.12.2024	0	2010001	->	2000000	6
         assertEquals(catchersServer.activeCatchers(), "Active catchers:\n");
 
     }
-
 
 
     @Test

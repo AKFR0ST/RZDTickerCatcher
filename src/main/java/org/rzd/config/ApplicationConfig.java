@@ -31,7 +31,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrainsImpl loaderTrains){
+    public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrainsImpl loaderTrains) {
         return new BotInterfaceImpl(server, options, messageSender, messageReceiver, loaderTrains);
     }
 }

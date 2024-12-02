@@ -7,7 +7,7 @@ public class ApplicationOptions {
     private String botId;
     private String apiKey;
 
-    public ApplicationOptions(String urlApi, String layer_id, Long timeout, String botId, String apiKey){
+    public ApplicationOptions(String urlApi, String layer_id, Long timeout, String botId, String apiKey) {
         this.urlApi = urlApi;
         this.layer_id = layer_id;
         this.timeout = timeout;

@@ -27,12 +27,12 @@ public class ApplicationConfigTest {
     private String apiKey;
 
     @Bean
-    public ApplicationOptions getApplicationOptions(){
+    public ApplicationOptions getApplicationOptions() {
         return new ApplicationOptions(urlApi, layer_id, timeout, botId, apiKey);
     }
 
     @Bean
-    public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrainsImpl loaderTrains){
+    public BotInterface getBotInterface(CatchersServerImpl server, ApplicationOptions options, @Qualifier("MessageSenderImpl") MessageSender messageSender, MessageReceiver messageReceiver, LoaderTrainsImpl loaderTrains) {
         return Mockito.mock(BotInterface.class);
     }
 
