@@ -3,6 +3,7 @@ package org.rzd.bot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rzd.config.ApplicationConfigTest;
 import org.rzd.model.ApplicationOptions;
@@ -10,8 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +26,7 @@ class MessageReceiverTest {
         applicationContext = new AnnotationConfigApplicationContext(ApplicationConfigTest.class);
         applicationOptions = applicationContext.getBean(ApplicationOptions.class);
         messageReceiver = spy(applicationContext.getBean(MessageReceiver.class));
-        when(messageReceiver.messageReceive()).thenReturn("""
+        Mockito.doReturn("""
                 {
                     "ok": true,
                     "result": [
@@ -55,7 +55,7 @@ class MessageReceiverTest {
                         }
                     ]
                 }
-                """);
+                """).when(messageReceiver).messageReceive();
     }
 
     @Test

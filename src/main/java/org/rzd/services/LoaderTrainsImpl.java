@@ -3,6 +3,7 @@ package org.rzd.services;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.cookie.BasicCookieStore;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
@@ -26,8 +27,6 @@ import java.util.List;
 @Component("LoaderTrains")
 public class LoaderTrainsImpl implements LoaderTrains {
     ApplicationOptions applicationOptions;
-    ApplicationContext context;
-    CloseableHttpClient httpclient;
     BasicCookieStore cookieStore;
     HttpClientResponseHandler<String> responseHandler;
 
@@ -36,10 +35,8 @@ public class LoaderTrainsImpl implements LoaderTrains {
     }
 
     @Autowired
-    public LoaderTrainsImpl(ApplicationContext applicationContext) {
-        httpclient = HttpClients.createDefault();
-        context = applicationContext;
-        applicationOptions = context.getBean("getApplicationOptions", ApplicationOptions.class);
+    public LoaderTrainsImpl(ApplicationOptions applicationOptions) {
+        this.applicationOptions = applicationOptions;
         cookieStore = new BasicCookieStore();
         responseHandler = addResponseHandler();
     }
@@ -74,18 +71,19 @@ public class LoaderTrainsImpl implements LoaderTrains {
             System.err.println("Interrupted Exception");
         }
         List<Train> trainList = new ArrayList<>();
-        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
-        HttpGet httpGet = getHttpGet(rid, ticketOptions);
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
 
+        HttpConnection hc = new HttpConnection(0L, ticketOptions);
+        hc.start();
         try {
-            String responseBody = httpclient.execute(httpGet, responseHandler);
-            jsonObject = new JSONObject(responseBody);
-        } catch (Exception e) {
-            System.err.println("Error while reading response");
+            hc.join();
         }
+        catch (InterruptedException e) {
+            System.err.println("Interrupted Exception");
+        }
+        jsonObject = new JSONObject(hc.responseBody);
 
-        assert jsonObject != null;
+
         JSONArray trainListJson = jsonObject.getJSONArray("tp").getJSONObject(0).getJSONArray("list");
         for (int i = 0; i < trainListJson.length(); i++) {
             JSONObject obj = trainListJson.getJSONObject(i);
@@ -108,17 +106,66 @@ public class LoaderTrainsImpl implements LoaderTrains {
 
     public Long getRid(TicketOptions ticketOptions) {
         long rid;
-
-        CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
-        HttpGet httpGet = getHttpGet(0L, ticketOptions);
-        try {
-            String responseBody = httpclient.execute(httpGet, responseHandler);
-            JSONObject jsonObject = new JSONObject(responseBody);
+            HttpConnection hc = new HttpConnection(0L, ticketOptions);
+            hc.start();
+            try {
+                hc.join();
+            }
+            catch (InterruptedException e) {
+                System.err.println("Interrupted Exception");
+            }
+            String rs = hc.responseBody;
+            JSONObject jsonObject = new JSONObject(rs);
             rid = jsonObject.getLong("RID");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
         return rid;
+    }
+
+
+
+    private class HttpConnection extends Thread {
+        CloseableHttpClient httpclient;
+        TicketOptions ticketOptions;
+        String responseBody;
+        public HttpConnection(long rid, TicketOptions ticketOptions) {
+            this.httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
+            this.ticketOptions = ticketOptions;
+        }
+        @Override
+        public void run() {
+            responseBody = getResponseBodyFromApi();
+        }
+
+        public String getResponseBody(){
+            return responseBody;
+        }
+
+        public String getResponseBodyFromApi() {
+            String responseBody = null;
+            try {
+                HttpGet httpGet = getHttpGet(0L, ticketOptions);
+                responseBody = httpclient.execute(httpGet, responseHandler);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+                return responseBody;
+        }
+
+        private HttpGet getHttpGet(Long rid, TicketOptions ticketOptions) {
+            String getUrl = applicationOptions.getUrlApi()
+                    + "?layer_id=" + applicationOptions.getLayer_id()
+                    + "&dir=0"
+                    + "&tfl=3"
+                    + "&checkSeats=0"
+                    + "&code0=" + ticketOptions.getCode0()
+                    + "&dt0=" + ticketOptions.getDt0()
+                    + "&code1=" + ticketOptions.getCode1();
+            if (rid != 0L) {
+                getUrl += "&rid=" + rid;
+            }
+            HttpGet httpGet = new HttpGet(getUrl);
+            httpGet.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+            return httpGet;
+        }
     }
 
     private HttpClientResponseHandler<String> addResponseHandler() {

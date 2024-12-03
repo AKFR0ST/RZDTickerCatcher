@@ -53,7 +53,7 @@ public class CatchersServerImpl implements CatchersServer {
         sb.append("Active catchers:\n");
         for (Catcher catcher : catchers) {
             if (catcher.getTicketCatcher().getState() != Thread.State.TERMINATED) {
-                sb.append("Catcher id :").append(catcher.getId()).append(" State: active ").
+                sb.append("Catcher id:").append(catcher.getId()).append(" State: active ").
                         append(catcher.getTicketCatcher().getTicketOptions().toString());
             }
         }
@@ -82,13 +82,21 @@ public class CatchersServerImpl implements CatchersServer {
             if (catcher.getId().equals(id)) {
                 catcher.getTicketCatcher().interrupt();
                 catcher.getTicketCatcher().sendStopCommand();
+                try {
+                    catcher.getTicketCatcher().join();
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         int result = 1;
         for (Catcher catcher : catchers) {
             if (catcher.getId().equals(id)) {

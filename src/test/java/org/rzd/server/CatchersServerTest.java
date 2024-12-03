@@ -1,5 +1,6 @@
 package org.rzd.server;
 
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.*;
 import org.rzd.config.ApplicationConfigTest;
 import org.rzd.model.Catcher;
@@ -13,19 +14,24 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CatchersServerTest {
     static CatchersServerImpl catchersServer;
     static String formattedDate;
+    static TicketOptions ticketOptions;
 
 
     @BeforeAll
     static void setUp() {
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ApplicationConfigTest.class);
-        catchersServer = (CatchersServerImpl) applicationContext.getBean("CatchersServerImpl");
+//        catchersServer = (CatchersServerImpl) applicationContext.getBean("CatchersServerImpl");
+        catchersServer = new CatchersServerImpl(applicationContext);
+
         catchersServer.start();
         LocalDateTime nextDate = LocalDateTime.now().plusDays(1L);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         formattedDate = nextDate.format(formatter);
+        ticketOptions = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
     }
 
     @AfterAll
@@ -33,16 +39,16 @@ class CatchersServerTest {
         catchersServer.stop();
     }
 
+    @Order(1)
     @Test
     void start() {
         assertNotNull(catchersServer.catchers);
     }
 
-
+    @Order(2)
     @Test
     void newCatcher() {
-        TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
-        Long id1 = catchersServer.newCatcher(t1, 519674552L);
+        Long id1 = catchersServer.newCatcher(ticketOptions, 519674552L);
         Catcher createdCatcher = null;
         for (Catcher c : catchersServer.catchers) {
             if (Objects.equals(c.getId(), id1)) {
@@ -52,52 +58,38 @@ class CatchersServerTest {
         assertNotNull(createdCatcher);
     }
 
-    @Test
-    void activeCatchers() {
-        TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
-        catchersServer.newCatcher(t1, 519674552L);
-        assertEquals(catchersServer.activeCatchers(), """
-                Active catchers:
-                Catcher id :3 State: active 03.12.2024	0	2010001	->	2000000	6
-                Catcher id :4 State: active 03.12.2024	0	2010001	->	2000000	6
-                """);
-    }
-
-    @Test
-    void killCatcherById() {
-        TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
-        Long id = catchersServer.newCatcher(t1, 519674552L);
-        assertEquals(catchersServer.killCatcherById(id), 0);
-        assertEquals(catchersServer.activeCatchers(), "Active catchers:\n");
-    }
-
-
+    @Order(3)
     @Test
     void allCatchers() {
-        TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
-        Long id = catchersServer.newCatcher(t1, 519674552L);
-        assertEquals(catchersServer.allCatchers(), """
-                Catchers:
-                Catcher id:1 State: active 03.12.2024\t0\t2010001\t->\t2000000\t6
-                """);
-        assertEquals(catchersServer.killCatcherById(id), 0);
-        assertEquals(catchersServer.activeCatchers(), "Active catchers:\n");
-
+        assertEquals(catchersServer.allCatchers(), "Catchers:\nCatcher id:1 State: active " + formattedDate + "\t0\t2010001\t->\t2000000\t6\n");
     }
 
 
+
+    @Order(4)
+    @Test
+    void killCatcherById() {
+        Long id = catchersServer.newCatcher(ticketOptions, 519674552L);
+        assertEquals(catchersServer.killCatcherById(id), 0);
+        assertEquals(catchersServer.activeCatchers(), "Active catchers:\nCatcher id:1 State: active "+formattedDate+"\t0\t2010001\t->\t2000000\t6\n");
+    }
+
+    @Order(5)
+    @Test
+    void activeCatchers() {
+        catchersServer.newCatcher(ticketOptions, 519674552L);
+        assertEquals(catchersServer.activeCatchers(), "Active catchers:\nCatcher id:1 State: active " + formattedDate + "\t0	2010001	->	2000000	6\nCatcher id:3 State: active "+formattedDate+"\t0\t2010001\t->\t2000000\t6\n");
+    }
+
+
+    @Order(6)
     @Test
     void killAllCatchers() {
-        TicketOptions t1 = new TicketOptions("2010001", "2000000", formattedDate, "0", 6L, 100L);
-        catchersServer.newCatcher(t1, 519674552L);
-        assertEquals(catchersServer.allCatchers(), """
-                Catchers:
-                Catcher id:1 State: active 03.12.2024\t0\t2010001\t->\t2000000\t6
-                """);
         catchersServer.killAllCatchers();
         assertEquals(catchersServer.activeCatchers(), "Active catchers:\n");
     }
 
+    @Order(7)
     @Test
     void stop() {
         catchersServer.stop();
