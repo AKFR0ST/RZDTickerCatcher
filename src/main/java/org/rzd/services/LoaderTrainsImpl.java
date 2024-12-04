@@ -52,7 +52,7 @@ public class LoaderTrainsImpl implements LoaderTrains {
         try {
             responseBody = httpclient.execute(httpGet, responseHandler);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error: " + e.getMessage());
         }
         JSONObject jsonObject = new JSONObject(responseBody);
         JSONArray jsonArray = jsonObject.getJSONArray("city");
@@ -64,11 +64,14 @@ public class LoaderTrainsImpl implements LoaderTrains {
 
     @Override
     public List<Train> getTrainList(TicketOptions ticketOptions) {
-        Long rid = getRid(ticketOptions);
+        Long rid;
+        synchronized (this) {
+            rid = getRid(ticketOptions);
+        }
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            System.err.println("Interrupted Exception");
+            System.err.println("Throw was interrupted");
         }
         List<Train> trainList = new ArrayList<>();
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
@@ -78,8 +81,8 @@ public class LoaderTrainsImpl implements LoaderTrains {
         try {
             String responseBody = httpclient.execute(httpGet, responseHandler);
             jsonObject = new JSONObject(responseBody);
-        } catch (Exception e) {
-            System.err.println("Error while reading response");
+        } catch (IOException e) {
+            System.err.println("Empty response");
         }
 
         assert jsonObject != null;
@@ -104,7 +107,7 @@ public class LoaderTrainsImpl implements LoaderTrains {
     }
 
     public Long getRid(TicketOptions ticketOptions) {
-        long rid;
+        long rid = 0L;
 
         CloseableHttpClient httpclient = HttpClients.custom().setDefaultCookieStore(cookieStore).build();
         HttpGet httpGet = getHttpGet(0L, ticketOptions);
@@ -113,7 +116,9 @@ public class LoaderTrainsImpl implements LoaderTrains {
             JSONObject jsonObject = new JSONObject(responseBody);
             rid = jsonObject.getLong("RID");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.err.println("RID not found");
+//            throw new RuntimeException(e);
+
         }
         return rid;
     }

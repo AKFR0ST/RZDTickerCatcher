@@ -1,5 +1,6 @@
 package org.rzd.services;
 
+import org.json.JSONException;
 import org.rzd.bot.MessageSender;
 import org.rzd.model.ApplicationOptions;
 import org.rzd.model.Car;
@@ -8,6 +9,7 @@ import org.rzd.model.Train;
 import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 public class TicketCatcher extends Thread {
     ApplicationContext context;
@@ -28,7 +30,11 @@ public class TicketCatcher extends Thread {
     }
 
     public void run() {
-        catchTicket();
+        try{
+            catchTicket();
+        }catch(JSONException e){
+            System.err.println("JSONException in TicketCatcher(Maybe catcher was killed by user)");
+        }
     }
 
     public TicketOptions getTicketOptions() {
@@ -43,27 +49,33 @@ public class TicketCatcher extends Thread {
         boolean gotcha = false;
         receiveStopCommand = false;
 
-        while (!gotcha && !receiveStopCommand) {
-            List<Train> trainList = loaderTrains.getTrainList(ticketOptions);
-            for (Train train : trainList) {
-                if (train.getNumber().equals(ticketOptions.getNumber())) {
-                    for (Car car : train.getCarList()) {
-                        if (car.getType().equals(ticketOptions.getType()) && ((car.getFreeSeats() > 0) && (car.getTariff() < ticketOptions.getMaxPrice()))) {
-                            gotcha = true;
-                            System.out.println("GOTCHA!!!");
-                            messageSender.sendMessage(chatId, "The ticket is caught! \n Train: " + train.getNumber() + "\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
+        try
+        {
+            while (!gotcha && !receiveStopCommand) {
+                List<Train> trainList = loaderTrains.getTrainList(ticketOptions);
+                for (Train train : trainList) {
+                    if (train.getNumber().equals(ticketOptions.getNumber())) {
+                        for (Car car : train.getCarList()) {
+                            if (car.getType().equals(ticketOptions.getType()) && ((car.getFreeSeats() > 0) && (car.getTariff() < ticketOptions.getMaxPrice()))) {
+                                gotcha = true;
+                                System.out.println("GOTCHA!!!");
+                                messageSender.sendMessage(chatId, "The ticket is caught! \n Train: " + train.getNumber() + "\nDeparture: " + train.getTime0() + "\nFree seats: " + car.getFreeSeats() + "\nTariff: " + car.getTariff());
+                            }
                         }
                     }
                 }
-            }
-            try {
-                if (!gotcha) {
-                    System.out.println("Ticket not found");
-                    Thread.sleep(applicationOptions.getTimeout());
+                try {
+                    if (!gotcha) {
+                        System.out.println("Ticket not found");
+                        Thread.sleep(applicationOptions.getTimeout());
+                    }
+                } catch (InterruptedException e) {
+                    System.err.println("Interrupted Exception(Catcher killed by user)");
                 }
-            } catch (InterruptedException e) {
-                System.err.println("Interrupted Exception");
             }
+        }
+        catch (CancellationException e) {
+            System.err.println("Task was cancelled");
         }
     }
 }
